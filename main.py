@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request, jsonify
 import logging
 
@@ -6,18 +8,36 @@ logging.basicConfig(level=logging.INFO)
 sessionStorage = {}
 
 
-@app.route('/post', methods=['POST'])
-def main():
+@app.route('/', methods=['POST'])
+def main1():
     logging.info(f'Request: {request.json!r}')
 
+    data = json.loads(request.get_json())
+
     response = {
-        'session': request.json['session'],
-        'version': request.json['version'],
+        'session': data['session'],
+        'version': data['version'],
         'response': {'end_session': False}
     }
-    handle_dialog(request.json, response)
+
+    handle_dialog(data, response)
     logging.info(f'Response: {response!r}')
     return jsonify(response)
+
+
+@app.route('/', methods=['GET'])
+def main2():
+    return '''
+        <!DOCTYPE html>
+        <html>
+        <body>
+
+        <h1>My First Heading</h1>
+        <p>My first paragraph.</p>
+
+        </body>
+        </html>
+    '''
 
 
 def handle_dialog(req, res):
